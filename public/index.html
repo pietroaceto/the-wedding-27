@@ -17,12 +17,12 @@
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
       :root {
-        --bg:       #0d0b08;
-        --bg2:      #181410;
+        --bg:       #07100a;
+        --bg2:      #0f1e13;
         --gold:     #c9a84c;
         --gold-lt:  #dfc06a;
-        --text:     #f5f0e8;
-        --text-lt:  #7a7060;
+        --text:     #e6ede6;
+        --text-lt:  #587862;
         --shadow:   0 4px 32px rgba(0,0,0,0.7);
       }
 
@@ -686,9 +686,9 @@
     <section id="home">
       <div class="section-inner fade-in">
         <h1>
-          <span class="name-line">Ludovica</span>
-          <span class="name-amp">&amp;</span>
           <span class="name-line">Pietro</span>
+          <span class="name-amp">&amp;</span>
+          <span class="name-line">Ludovica</span>
         </h1>
         <div class="divider"></div>
         <p class="wedding-date">03 · Ottobre · 2027</p>
@@ -774,9 +774,9 @@
         </div>
 
         <div class="iban-box">
-          <button class="copy-btn" onclick="copyText('Ludovica Conigliaro &amp; Pietro Aceto', this)">Copia</button>
+          <button class="copy-btn" onclick="copyText('Pietro Aceto &amp; Ludovica Conigliaro', this)">Copia</button>
           <p class="label">Intestato a</p>
-          <p class="value">Ludovica Conigliaro &amp; Pietro Aceto</p>
+          <p class="value">Pietro Aceto &amp; Ludovica Conigliaro</p>
         </div>
 
         <div class="iban-box">
@@ -863,17 +863,14 @@
             <div class="children-fields" id="figliFields">
               <div class="form-group">
                 <label for="num-figli">Quanti bambini?</label>
-                <select id="num-figli" name="numFigli">
+                <select id="num-figli" name="numFigli" onchange="updateFigliList(this.value)">
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4+">4 o più</option>
                 </select>
               </div>
-              <div class="form-group">
-                <label for="figli-nomi">Nomi (opzionale)</label>
-                <input type="text" id="figli-nomi" name="figliNomi" placeholder="es. Marco, Giulia">
-              </div>
+              <div id="figli-list"></div>
             </div>
 
             <div class="form-group" style="margin-top:1rem;">
@@ -909,9 +906,9 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.86 9.63 19.79 19.79 0 01.77 1a2 2 0 012-2.18H5.5a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 6.37a16 16 0 006.72 6.72l1.35-1.35a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14z"/></svg>
               +39 351 898 5890
             </a>
-            <a href="mailto:ludovica@esempio.it">
+            <a href="mailto:conigliaroludovica24@gmail.com">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              ludovica@esempio.it
+              conigliaroludovica24@gmail.com
             </a>
           </div>
 
@@ -933,7 +930,7 @@
 
     <!-- ===== FOOTER ===== -->
     <footer>
-      <p>Con amore, Ludovica &amp; Pietro &hearts;</p>
+      <p>Con amore, Pietro &amp; Ludovica &hearts;</p>
     </footer>
 
     <!-- ===== SCRIPTS ===== -->
@@ -965,7 +962,7 @@
       const navbar = document.querySelector('.navbar');
       window.addEventListener('scroll', () => {
         if (window.scrollY > 60) {
-          navbar.style.background = 'rgba(13, 11, 8, 0.92)';
+          navbar.style.background = 'rgba(7, 16, 10, 0.92)';
           navbar.style.backdropFilter = 'blur(8px)';
           navbar.style.borderBottom = '1px solid rgba(201, 168, 76, 0.15)';
         } else {
@@ -1022,8 +1019,33 @@
         document.getElementById('partnerFields').classList.toggle('show', show);
       }
 
+      function updateFigliList(val) {
+        const container = document.getElementById('figli-list');
+        const n = val === '4+' ? 4 : parseInt(val, 10);
+        let html = '';
+        for (let i = 1; i <= n; i++) {
+          html += `
+            <div class="form-row" style="margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0">
+                <label>Bambino ${i} – Nome <em style="font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;font-size:0.8em;">(opzionale)</em></label>
+                <input type="text" name="figlio${i}Nome" autocomplete="off" placeholder="es. Marco">
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label>Età</label>
+                <select name="figlio${i}Eta">
+                  <option value="0-3">0 – 3 anni</option>
+                  <option value="3-8">3 – 8 anni</option>
+                  <option value="8+">8+ anni</option>
+                </select>
+              </div>
+            </div>`;
+        }
+        container.innerHTML = html;
+      }
+
       function toggleFigli(show) {
         document.getElementById('figliFields').classList.toggle('show', show);
+        if (show) updateFigliList(document.getElementById('num-figli').value);
       }
 
       // ------- RSVP form submit -------

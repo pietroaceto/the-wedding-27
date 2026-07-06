@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anteprima Palette — Invito</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Palette A (Terra Umbra) come default ── */
+    :root {
+      --bg:      #100b06;
+      --bg2:     #1d1309;
+      --gold:    #c9a84c;
+      --gold-lt: #dfc06a;
+      --text:    #f7ece0;
+      --text-lt: #8c6a52;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      padding-top: 52px; /* preview bar height */
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ====================================================
+       PREVIEW BAR (fixed top)
+    ==================================================== */
+    #preview-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0 1rem;
+      height: 52px;
+      background: rgba(6,5,3,0.97);
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+      backdrop-filter: blur(10px);
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    .bar-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(201,168,76,0.55);
+      white-space: nowrap;
+      margin-right: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    .pal-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.28rem 0.65rem;
+      border: 1px solid rgba(201,168,76,0.22);
+      border-radius: 2px;
+      background: transparent;
+      color: rgba(245,240,232,0.5);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .pal-btn:hover {
+      border-color: rgba(201,168,76,0.5);
+      color: var(--gold-lt);
+    }
+
+    .pal-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201,168,76,0.1);
+    }
+
+    .swatch {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .bar-sep {
+      flex: 1;
+      min-width: 0.5rem;
+    }
+
+    .bar-divider {
+      width: 1px;
+      height: 22px;
+      background: rgba(201,168,76,0.2);
+      flex-shrink: 0;
+    }
+
+    .jump-btn {
+      padding: 0.28rem 0.8rem;
+      border: 1px solid rgba(201,168,76,0.4);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--gold);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .jump-btn:hover {
+      background: rgba(201,168,76,0.1);
+    }
+
+    /* ====================================================
+       STAGE 1 — ENVELOPE
+    ==================================================== */
+    #envelope-stage {
+      min-height: calc(100vh - 52px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.25rem;
+      padding: 2rem;
+      transition: background 0.4s ease, opacity 0.65s ease;
+    }
+
+    #envelope-stage.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .env-wrapper {
+      width: min(480px, 92vw);
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .env-wrapper:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 10px;
+      border-radius: 4px;
+    }
+
+    .env-wrapper svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    #flap-group {
+      transform-box: fill-box;
+      transform-origin: 50% 0%;
+      transition: transform 0.78s cubic-bezier(0.42, 0, 0.28, 1.0);
+      backface-visibility: hidden;
+    }
+
+    #seal-group {
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+      transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    .hint-label {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--gold);
+      font-size: clamp(0.88rem, 2.5vw, 1.05rem);
+      letter-spacing: 0.14em;
+      animation: hint-pulse 2.4s ease-in-out infinite;
+      text-align: center;
+    }
+
+    @keyframes hint-pulse {
+      0%, 100% { opacity: 0.38; }
+      50%       { opacity: 0.92; }
+    }
+
+    /* ====================================================
+       STAGE 2 — LETTER
+    ==================================================== */
+    #letter-stage {
+      display: none;
+      opacity: 0;
+      transform: translateY(48px);
+      transition: opacity 0.85s ease, transform 0.85s ease, background 0.4s ease;
+      padding: clamp(3rem, 7vh, 5rem) 1.25rem clamp(4rem, 8vh, 6rem);
+      min-height: calc(100vh - 52px);
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .letter-card {
+      max-width: 660px;
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid rgba(201,168,76,0.22);
+      border-radius: 3px;
+      padding: clamp(2rem, 6vw, 4.5rem) clamp(1.5rem, 7vw, 4rem);
+      box-shadow: 0 16px 70px rgba(0,0,0,0.85),
+                  inset 0 1px 0 rgba(201,168,76,0.08);
+      transition: background 0.4s ease;
+    }
+
+    .letter-ornament       { text-align: center; margin-bottom: 2.5rem; }
+    .letter-ornament-bottom{ text-align: center; margin-top: 2.25rem; }
+
+    .letter-greeting {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1.05rem, 3vw, 1.3rem);
+      color: var(--text);
+      margin-bottom: 1.6rem;
+      line-height: 1.55;
+    }
+
+    .letter-intro {
+      font-size: clamp(0.88rem, 2.3vw, 0.95rem);
+      color: var(--text-lt);
+      line-height: 1.9;
+    }
+
+    .letter-rule {
+      border: none;
+      border-top: 1px solid rgba(201,168,76,0.2);
+      margin: 1.85rem 0;
+    }
+
+    .names-section {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .name-block      { flex: 1; min-width: 0; }
+    .name-block.groom{ text-align: left; }
+    .name-block.bride{ text-align: right; }
+
+    .name-full {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: clamp(1.45rem, 4.5vw, 2.15rem);
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 0.45rem;
+      word-break: break-word;
+    }
+
+    .name-birth {
+      font-size: clamp(0.7rem, 1.8vw, 0.78rem);
+      color: var(--gold);
+      line-height: 1.75;
+      letter-spacing: 0.02em;
+    }
+
+    .amp-col {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(2rem, 6vw, 3.6rem);
+      color: var(--gold);
+      flex-shrink: 0;
+      line-height: 1;
+      padding-top: 0.15rem;
+      text-align: center;
+    }
+
+    .letter-body {
+      font-size: clamp(0.88rem, 2.3vw, 0.95rem);
+      color: var(--text-lt);
+      line-height: 1.9;
+      margin-bottom: 0.9rem;
+    }
+    .letter-body:last-of-type { margin-bottom: 0; }
+    .letter-body strong { color: var(--text); font-weight: 700; }
+
+    .letter-info {
+      margin-top: 2rem;
+      padding-top: 1.6rem;
+      border-top: 1px solid rgba(201,168,76,0.14);
+      font-size: clamp(0.82rem, 2.1vw, 0.88rem);
+      color: var(--text-lt);
+      line-height: 1.85;
+    }
+
+    .letter-info a {
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(201,168,76,0.35);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .letter-info a:hover { color: var(--gold-lt); border-bottom-color: var(--gold-lt); }
+
+    .letter-signature {
+      margin-top: 2.6rem;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 3.5vw, 1.55rem);
+      color: var(--gold-lt);
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 400px) {
+      .names-section { flex-direction: column; align-items: center; gap: 0.5rem; }
+      .name-block.groom, .name-block.bride { text-align: center; width: 100%; }
+      .amp-col { padding: 0.25rem 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     BARRA ANTEPRIMA
+================================================================ -->
+<div id="preview-bar">
+  <span class="bar-label">Palette:</span>
+
+  <button class="pal-btn active" onclick="setPalette('A')" data-pal="A">
+    <span class="swatch" style="background:#100b06"></span>
+    A · Terra Umbra
+  </button>
+  <button class="pal-btn" onclick="setPalette('B')" data-pal="B">
+    <span class="swatch" style="background:#1c0d10"></span>
+    B · Vite Rossa
+  </button>
+  <button class="pal-btn" onclick="setPalette('C')" data-pal="C">
+    <span class="swatch" style="background:#0f1e13"></span>
+    C · Cipresso
+  </button>
+  <button class="pal-btn" onclick="setPalette('D')" data-pal="D">
+    <span class="swatch" style="background:#121624"></span>
+    D · Nebbia
+  </button>
+  <button class="pal-btn" onclick="setPalette('E')" data-pal="E">
+    <span class="swatch" style="background:#201205"></span>
+    E · Tramonto
+  </button>
+
+  <div class="bar-sep"></div>
+  <div class="bar-divider"></div>
+
+  <button class="jump-btn" id="jumpBtn" onclick="jumpStage()">
+    Vai alla Lettera →
+  </button>
+</div>
+
+
+<!-- ================================================================
+     STAGE 1 — ENVELOPE
+================================================================ -->
+<div id="envelope-stage">
+
+  <div class="env-wrapper" id="envWrapper"
+       role="button" tabindex="0"
+       aria-label="Apri il tuo invito di nozze"
+       onclick="openEnvelope()"
+       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEnvelope();}">
+
+    <svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <radialGradient id="sealGrad" cx="46%" cy="36%" r="65%">
+          <stop offset="0%"   stop-color="#e8c868"/>
+          <stop offset="55%"  stop-color="#c9a84c"/>
+          <stop offset="100%" stop-color="#8a6020"/>
+        </radialGradient>
+        <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop id="bodyStop1" offset="0%"   stop-color="#231508"/>
+          <stop id="bodyStop2" offset="100%" stop-color="#140d04"/>
+        </linearGradient>
+        <linearGradient id="flapGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop id="flapStop1" offset="0%"   stop-color="#2a1a0a"/>
+          <stop id="flapStop2" offset="100%" stop-color="#1c1206"/>
+        </linearGradient>
+        <filter id="env-shadow" x="-8%" y="-8%" width="116%" height="130%">
+          <feDropShadow dx="0" dy="10" stdDeviation="18"
+            flood-color="#000000" flood-opacity="0.75"/>
+        </filter>
+      </defs>
+
+      <rect x="0.5" y="0.5" width="499" height="339" rx="2"
+        fill="url(#bodyGrad)"
+        stroke="rgba(201,168,76,0.48)" stroke-width="1"
+        filter="url(#env-shadow)"/>
+
+      <line x1="1"   y1="339" x2="250" y2="172" stroke="rgba(201,168,76,0.2)"  stroke-width="1"/>
+      <line x1="499" y1="339" x2="250" y2="172" stroke="rgba(201,168,76,0.2)"  stroke-width="1"/>
+      <line x1="1"   y1="1"   x2="250" y2="172" stroke="rgba(201,168,76,0.1)"  stroke-width="1"/>
+      <line x1="499" y1="1"   x2="250" y2="172" stroke="rgba(201,168,76,0.1)"  stroke-width="1"/>
+
+      <g id="flap-group">
+        <polygon points="1,1 499,1 250,182"
+          fill="url(#flapGrad)"
+          stroke="rgba(201,168,76,0.48)" stroke-width="1"
+          stroke-linejoin="round"/>
+        <g id="seal-group">
+          <circle cx="250" cy="108" r="42"
+            fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
+          <circle cx="250" cy="108" r="38" fill="url(#sealGrad)"/>
+          <circle cx="250" cy="108" r="30"
+            fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="1.5"/>
+          <circle cx="250" cy="108" r="25"
+            fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.8"/>
+          <text x="250" y="112"
+            font-family="'Playfair Display', Georgia, serif"
+            font-style="italic" font-size="17" font-weight="600"
+            fill="#0d0b08" text-anchor="middle" dominant-baseline="middle"
+            letter-spacing="2">L &amp; P</text>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <p class="hint-label">— tocca per aprire —</p>
+</div>
+
+
+<!-- ================================================================
+     STAGE 2 — LETTER
+================================================================ -->
+<div id="letter-stage">
+  <div class="letter-card">
+
+    <div class="letter-ornament">
+      <svg width="220" height="22" viewBox="0 0 220 22" aria-hidden="true">
+        <line x1="0" y1="11" x2="88" y2="11"
+          stroke="rgba(201,168,76,0.42)" stroke-width="1"/>
+        <polygon points="110,3 117,11 110,19 103,11"
+          fill="none" stroke="rgba(201,168,76,0.65)" stroke-width="1"/>
+        <line x1="132" y1="11" x2="220" y2="11"
+          stroke="rgba(201,168,76,0.42)" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <p class="letter-greeting" id="letter-greeting">Carissimi Berga e Maria,</p>
+
+    <p class="letter-intro">
+      Con grande gioia e gratitudine, vi annunciamo il nostro matrimonio.
+    </p>
+
+    <hr class="letter-rule">
+
+    <div class="names-section">
+      <div class="name-block groom">
+        <p class="name-full">Pietro<br>Aceto</p>
+        <p class="name-birth">
+          Via Madonna del Riccio 37/A<br>
+          Perugia (PG)
+        </p>
+      </div>
+      <div class="amp-col">&amp;</div>
+      <div class="name-block bride">
+        <p class="name-full">Ludovica<br>Conigliaro</p>
+        <p class="name-birth">
+          Via del Cortone 36<br>
+          Perugia (PG)
+        </p>
+      </div>
+    </div>
+
+    <hr class="letter-rule">
+
+    <p class="letter-body">
+      sono lieti di <span id="inv-verb">invitarvi</span> il
+      <strong>3 ottobre 2027</strong> presso
+      <strong>l'Abbazia di Monte Corona</strong> (Umbertide PG)
+      per la celebrazione del rito.
+    </p>
+
+    <p class="letter-body">
+      Seguirà il ricevimento presso
+      <strong>Villa Torranca, Pianello (PG)</strong>
+      per condividere una giornata di festa.
+    </p>
+
+    <div class="letter-info">
+      Per info e comunicare la presenza ed eventualmente allergie e/o
+      intolleranze <span id="inv-cta">seguite</span> il link:<br>
+      <a href="https://thewedding27-e47d8.web.app"
+         target="_blank" rel="noopener noreferrer">
+        thewedding27-e47d8.web.app
+      </a>
+    </div>
+
+    <div class="letter-signature">Pietro &amp; Ludovica</div>
+
+    <div class="letter-ornament-bottom">
+      <svg width="120" height="18" viewBox="0 0 120 18" aria-hidden="true">
+        <line x1="0"  y1="9" x2="52" y2="9"  stroke="rgba(201,168,76,0.32)" stroke-width="1"/>
+        <circle cx="60" cy="9" r="3"           fill="rgba(201,168,76,0.48)"/>
+        <line x1="68" y1="9" x2="120" y2="9"  stroke="rgba(201,168,76,0.32)" stroke-width="1"/>
+      </svg>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+  /* ── Palette definitions ────────────────────────────────────────────────── */
+  var PALETTES = {
+    A: {
+      name: 'A · Terra Umbra',
+      bg: '#100b06', bg2: '#1d1309', text: '#f7ece0', textLt: '#8c6a52',
+      bodyTop: '#231508', bodyBot: '#140d04',
+      flapTop: '#2a1a0a', flapBot: '#1c1206'
+    },
+    B: {
+      name: 'B · Vite Rossa',
+      bg: '#0e0608', bg2: '#1c0d10', text: '#f5e8ea', textLt: '#806070',
+      bodyTop: '#220c12', bodyBot: '#130a0e',
+      flapTop: '#2a1018', flapBot: '#1e0c12'
+    },
+    C: {
+      name: 'C · Cipresso',
+      bg: '#07100a', bg2: '#0f1e13', text: '#e6ede6', textLt: '#587862',
+      bodyTop: '#102212', bodyBot: '#0a150d',
+      flapTop: '#142814', flapBot: '#0d1c10'
+    },
+    D: {
+      name: 'D · Nebbia di Ottobre',
+      bg: '#090a12', bg2: '#121624', text: '#e8eaf5', textLt: '#686888',
+      bodyTop: '#12141e', bodyBot: '#0d1018',
+      flapTop: '#161a28', flapBot: '#12141c'
+    },
+    E: {
+      name: 'E · Tramonto',
+      bg: '#110900', bg2: '#201205', text: '#f9e8d0', textLt: '#9a6830',
+      bodyTop: '#2c1606', bodyBot: '#180e03',
+      flapTop: '#381c08', flapBot: '#251204'
+    }
+  };
+
+  var _currentPal = 'A';
+  var _onLetter   = false;
+  var _opened     = false;
+
+  /* ── Switch palette ─────────────────────────────────────────────────────── */
+  function setPalette(key) {
+    var p = PALETTES[key];
+    var r = document.documentElement.style;
+    r.setProperty('--bg',      p.bg);
+    r.setProperty('--bg2',     p.bg2);
+    r.setProperty('--text',    p.text);
+    r.setProperty('--text-lt', p.textLt);
+
+    /* Update SVG envelope gradients */
+    document.getElementById('bodyStop1').setAttribute('stop-color', p.bodyTop);
+    document.getElementById('bodyStop2').setAttribute('stop-color', p.bodyBot);
+    document.getElementById('flapStop1').setAttribute('stop-color', p.flapTop);
+    document.getElementById('flapStop2').setAttribute('stop-color', p.flapBot);
+
+    /* Update active button */
+    document.querySelectorAll('.pal-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.pal === key);
+    });
+
+    _currentPal = key;
+  }
+
+  /* ── Jump between envelope ↔ letter ────────────────────────────────────── */
+  function jumpStage() {
+    var envStage = document.getElementById('envelope-stage');
+    var letStage = document.getElementById('letter-stage');
+    var btn      = document.getElementById('jumpBtn');
+
+    if (!_onLetter) {
+      /* Show letter immediately */
+      envStage.style.display = 'none';
+      letStage.style.display = 'flex';
+      letStage.style.transition = 'none';
+      letStage.style.opacity = '1';
+      letStage.style.transform = 'none';
+      btn.textContent = '← Torna alla Busta';
+      _onLetter = true;
+      window.scrollTo({ top: 0 });
+    } else {
+      /* Return to envelope and reset animation */
+      letStage.style.display = 'none';
+
+      _opened = false;
+      var flap = document.getElementById('flap-group');
+      var seal = document.getElementById('seal-group');
+      flap.style.transition = '';
+      flap.style.transform  = '';
+      seal.style.transition = '';
+      seal.style.opacity    = '';
+      seal.style.transform  = '';
+      envStage.style.display  = 'flex';
+      envStage.style.opacity  = '1';
+      envStage.classList.remove('fade-out');
+
+      btn.textContent = 'Vai alla Lettera →';
+      _onLetter = false;
+      window.scrollTo({ top: 0 });
+    }
+  }
+
+  /* ── Envelope open animation (identical to invito.html) ─────────────────── */
+  function openEnvelope() {
+    if (_opened) return;
+    _opened = true;
+
+    var flap     = document.getElementById('flap-group');
+    var seal     = document.getElementById('seal-group');
+    var envStage = document.getElementById('envelope-stage');
+    var letStage = document.getElementById('letter-stage');
+    var btn      = document.getElementById('jumpBtn');
+
+    seal.style.opacity   = '0';
+    seal.style.transform = 'scale(1.2)';
+
+    setTimeout(function() {
+      flap.style.transform = 'perspective(720px) rotateX(-182deg)';
+    }, 230);
+
+    setTimeout(function() {
+      envStage.classList.add('fade-out');
+    }, 920);
+
+    setTimeout(function() {
+      envStage.style.display = 'none';
+      letStage.style.display = 'flex';
+      void letStage.offsetWidth;
+      letStage.style.transition = 'opacity 0.85s ease, transform 0.85s ease';
+      letStage.style.opacity    = '1';
+      letStage.style.transform  = 'translateY(0)';
+      btn.textContent = '← Torna alla Busta';
+      _onLetter = true;
+      window.scrollTo({ top: 0 });
+    }, 1580);
+  }
+
+  /* ── Init with palette A ────────────────────────────────────────────────── */
+  setPalette('A');
+</script>
+</body>
+</html>
