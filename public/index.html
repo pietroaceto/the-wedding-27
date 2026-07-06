@@ -17,21 +17,20 @@
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
       :root {
-        --cream:    #fdf6ef;
-        --gold:     #b8966e;
-        --gold-lt:  #d4b896;
-        --rose:     #8b4f6e;
-        --text:     #3a2e2e;
-        --text-lt:  #6b5b5b;
-        --white:    #ffffff;
-        --shadow:   0 4px 24px rgba(0,0,0,0.10);
+        --bg:       #0d0b08;
+        --bg2:      #181410;
+        --gold:     #c9a84c;
+        --gold-lt:  #dfc06a;
+        --text:     #f5f0e8;
+        --text-lt:  #7a7060;
+        --shadow:   0 4px 32px rgba(0,0,0,0.7);
       }
 
       html { scroll-behavior: smooth; }
 
       body {
         font-family: 'Lato', sans-serif;
-        background: var(--cream);
+        background: var(--bg);
         color: var(--text);
         overflow-x: hidden;
       }
@@ -47,16 +46,16 @@
         align-items: center;
         justify-content: space-between;
         padding: 1rem 2rem;
-        background: rgba(253, 246, 239, 0.92);
-        backdrop-filter: blur(8px);
-        border-bottom: 1px solid rgba(184, 150, 110, 0.2);
+        background: transparent;
+        backdrop-filter: none;
+        border-bottom: none;
       }
 
       .navbar-brand {
         font-family: 'Playfair Display', serif;
         font-style: italic;
         font-size: 1.4rem;
-        color: var(--rose);
+        color: var(--gold);
         text-decoration: none;
       }
 
@@ -77,7 +76,7 @@
       .hamburger span {
         display: block;
         height: 2px;
-        background: var(--rose);
+        background: var(--gold);
         border-radius: 2px;
         transition: all 0.3s ease;
         transform-origin: center;
@@ -93,7 +92,7 @@
         top: 0; right: -100%;
         width: min(320px, 85vw);
         height: 100vh;
-        background: var(--white);
+        background: var(--bg2);
         z-index: 150;
         display: flex;
         flex-direction: column;
@@ -111,7 +110,7 @@
         color: var(--text);
         text-decoration: none;
         padding: 0.85rem 0;
-        border-bottom: 1px solid rgba(184,150,110,0.2);
+        border-bottom: 1px solid rgba(201,168,76,0.15);
         transition: color 0.2s;
         display: flex;
         align-items: center;
@@ -125,8 +124,8 @@
       }
 
       .nav-drawer a:last-child { border-bottom: none; }
-      .nav-drawer a:hover { color: var(--rose); }
-      .nav-drawer a:hover svg { stroke: var(--rose); }
+      .nav-drawer a:hover { color: var(--gold); }
+      .nav-drawer a:hover svg { stroke: var(--gold-lt); }
 
       .nav-overlay {
         position: fixed;
@@ -156,42 +155,41 @@
       }
 
       .section-label {
-        font-size: 0.78rem;
-        letter-spacing: 0.2em;
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
         text-transform: uppercase;
         color: var(--gold);
         margin-bottom: 0.75rem;
+        font-weight: 700;
       }
 
       section h2 {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
         font-size: clamp(2rem, 5vw, 3rem);
-        color: var(--rose);
+        color: var(--text);
         margin-bottom: 1.5rem;
       }
 
       .divider {
-        width: 60px;
-        height: 2px;
+        width: 40px;
+        height: 1px;
         background: var(--gold);
         margin: 0 auto 2rem;
-        border-radius: 2px;
       }
 
       /* ===== HOME ===== */
       #home {
-        background: url('images/SfondoHome.jpg') center 90% / cover no-repeat;
-        align-items: flex-end;
+        background: url('images/SfondoHome.jpg') center center / cover no-repeat;
+        align-items: center;
         padding-bottom: 1rem;
         position: relative;
       }
 
       @media (max-width: 768px) {
         #home {
-          align-items: center;
-          background-position: 55% 100%; /* destra-sinistra% alto-basso% */
-        }
-        #home .section-inner {
-          margin-top: 15rem; /* aumenta per scendere, diminuisci per salire */
+          background-position: center 40%;
+          min-height: 80vh;
         }
       }
 
@@ -199,7 +197,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(to bottom, transparent 50%, rgba(253,246,239,0.96) 80%);
+        background: rgba(0, 0, 0, 0.18);
         z-index: 0;
       }
 
@@ -217,7 +215,7 @@
         box-shadow: var(--shadow);
         margin: 0 auto 2rem;
         display: block;
-        background: #ecddd0;
+        background: var(--bg2);
       }
 
       /* Photo placeholder */
@@ -240,26 +238,32 @@
       .photo-placeholder svg { opacity: 0.6; }
 
       #home h1 {
-        font-size: clamp(2.5rem, 7vw, 4.5rem);
-        color: var(--rose);
-        line-height: 1.1;
-        margin-bottom: 0.75rem;
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-size: clamp(3.5rem, 10vw, 6.5rem);
+        color: #ffffff;
+        line-height: 1.0;
+        margin: 0.5rem 0 2.5rem;
       }
 
-      #home h1 span {
+      .name-line { display: block; }
+
+      .name-amp {
         display: block;
-        font-style: italic;
-        font-size: 1.5rem;
+        font-size: 0.4em;
         color: var(--gold);
-        margin-bottom: 0.5rem;
+        line-height: 2.2;
+        font-style: italic;
       }
 
       .wedding-date {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.2rem;
-        color: var(--text-lt);
-        margin-top: 1.25rem;
-        letter-spacing: 0.05em;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--gold);
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
       }
 
       .countdown {
@@ -279,7 +283,7 @@
       .countdown-num {
         font-family: 'Playfair Display', serif;
         font-size: 2.5rem;
-        color: var(--rose);
+        color: #ffffff;
         line-height: 1;
       }
 
@@ -293,79 +297,87 @@
 
       /* ===== CARD ===== */
       .card {
-        background: var(--white);
-        border-radius: 16px;
+        background: var(--bg2);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 3px;
         padding: 2.5rem 2rem;
         box-shadow: var(--shadow);
         margin-bottom: 1.5rem;
+        text-align: left;
       }
 
       .card h3 {
-        font-size: 1.4rem;
-        color: var(--rose);
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-size: 1.5rem;
+        color: var(--text);
         margin-bottom: 0.5rem;
       }
 
       .card p {
         color: var(--text-lt);
         line-height: 1.7;
-        font-size: 1rem;
+        font-size: 0.95rem;
       }
 
       .card .time {
-        font-size: 1.1rem;
+        font-size: 0.82rem;
         font-weight: 700;
+        letter-spacing: 0.1em;
         color: var(--gold);
-        margin: 0.75rem 0;
-        letter-spacing: 0.05em;
+        margin: 0.85rem 0;
+        text-transform: uppercase;
       }
 
       /* ===== BUTTONS ===== */
       .btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.85rem 2rem;
-        border-radius: 50px;
+        gap: 0.6rem;
+        padding: 0.9rem 2.2rem;
+        border-radius: 2px;
         font-family: 'Lato', sans-serif;
-        font-size: 0.95rem;
+        font-size: 0.7rem;
         font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
         text-decoration: none;
         transition: all 0.25s;
         cursor: pointer;
-        border: none;
+        border: 1px solid var(--gold);
       }
 
       .btn-primary {
-        background: var(--rose);
-        color: var(--white);
+        background: transparent;
+        color: var(--gold);
       }
 
       .btn-primary:hover {
-        background: #7a4560;
+        background: var(--gold);
+        color: var(--bg);
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(139,79,110,0.35);
+        box-shadow: 0 6px 20px rgba(201,168,76,0.25);
       }
 
       .btn-outline {
         background: transparent;
-        color: var(--rose);
-        border: 2px solid var(--rose);
+        color: var(--gold);
+        border: 1px solid var(--gold);
       }
 
       .btn-outline:hover {
-        background: var(--rose);
-        color: var(--white);
+        background: var(--gold);
+        color: var(--bg);
         transform: translateY(-2px);
       }
 
       /* ===== GIFT ===== */
-      #regalo { background: #fdf6ef; }
+      #regalo { background: var(--bg2); }
 
       .iban-box {
-        background: var(--white);
-        border: 1px solid rgba(184,150,110,0.3);
-        border-radius: 12px;
+        background: var(--bg);
+        border: 1px solid rgba(201,168,76,0.2);
+        border-radius: 3px;
         padding: 1.5rem 2rem;
         margin: 1rem 0;
         position: relative;
@@ -399,14 +411,15 @@
         transition: all 0.2s;
       }
 
-      .copy-btn:hover { background: var(--gold); color: var(--white); }
+      .copy-btn:hover { background: var(--gold); color: var(--bg); }
 
       /* ===== RSVP FORM ===== */
-      #rsvp { background: linear-gradient(160deg, #f5e8db 0%, #fdf6ef 100%); }
+      #rsvp { background: var(--bg); }
 
       .form-card {
-        background: var(--white);
-        border-radius: 16px;
+        background: var(--bg2);
+        border: 1px solid rgba(201,168,76,0.12);
+        border-radius: 3px;
         padding: 2.5rem 2rem;
         box-shadow: var(--shadow);
         text-align: left;
@@ -431,12 +444,12 @@
       .form-group textarea {
         width: 100%;
         padding: 0.75rem 1rem;
-        border: 1.5px solid #e0d0c5;
-        border-radius: 8px;
+        border: 1px solid rgba(201,168,76,0.2);
+        border-radius: 2px;
         font-family: 'Lato', sans-serif;
         font-size: 1rem;
         color: var(--text);
-        background: #fdfaf8;
+        background: var(--bg);
         transition: border-color 0.2s;
         outline: none;
       }
@@ -444,7 +457,7 @@
       .form-group input:focus,
       .form-group select:focus,
       .form-group textarea:focus {
-        border-color: var(--rose);
+        border-color: var(--gold);
       }
 
       .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -454,10 +467,10 @@
         font-family: 'Playfair Display', serif;
         font-style: italic;
         font-size: 1.05rem;
-        color: var(--rose);
+        color: var(--gold);
         margin: 1.5rem 0 1rem;
         padding-bottom: 0.4rem;
-        border-bottom: 1px solid rgba(184,150,110,0.25);
+        border-bottom: 1px solid rgba(201,168,76,0.18);
       }
 
       .radio-group {
@@ -480,7 +493,7 @@
 
       .radio-group input[type="radio"] {
         width: auto;
-        accent-color: var(--rose);
+        accent-color: var(--gold);
       }
 
       .partner-fields, .children-fields { display: none; }
@@ -510,22 +523,20 @@
 
       .form-message.success {
         display: block;
-        background: #f0faf4;
-        color: #2e7d52;
-        border: 1px solid #a3d9b8;
+        background: rgba(201,168,76,0.08);
+        color: var(--gold-lt);
+        border: 1px solid rgba(201,168,76,0.3);
       }
 
       .form-message.error {
         display: block;
-        background: #fff0f0;
-        color: #b0352e;
-        border: 1px solid #f5a9a5;
+        background: rgba(180,50,40,0.08);
+        color: #e07060;
+        border: 1px solid rgba(180,50,40,0.3);
       }
 
       /* ===== CONTACTS ===== */
-      #contatti {
-        background: linear-gradient(160deg, #fdf6ef 0%, #f5e8db 100%);
-      }
+      #contatti { background: var(--bg2); }
 
       .contacts-grid {
         display: grid;
@@ -537,8 +548,9 @@
       @media (max-width: 500px) { .contacts-grid { grid-template-columns: 1fr; } }
 
       .contact-card {
-        background: var(--white);
-        border-radius: 16px;
+        background: var(--bg);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 3px;
         padding: 2rem 1.5rem;
         box-shadow: var(--shadow);
         text-align: center;
@@ -554,7 +566,7 @@
 
       .contact-card h3 {
         font-size: 1.3rem;
-        color: var(--rose);
+        color: var(--text);
         margin-bottom: 1rem;
       }
 
@@ -570,19 +582,19 @@
         transition: color 0.2s;
       }
 
-      .contact-card a:hover { color: var(--rose); }
+      .contact-card a:hover { color: var(--gold); }
       .contact-card a svg { overflow: visible; flex-shrink: 0; }
 
       /* ===== FOOTER ===== */
       footer {
         text-align: center;
         padding: 2rem;
-        background: var(--white);
+        background: var(--bg);
         color: var(--gold);
         font-family: 'Playfair Display', serif;
         font-style: italic;
         font-size: 1rem;
-        border-top: 1px solid rgba(184,150,110,0.2);
+        border-top: 1px solid rgba(201,168,76,0.15);
       }
 
       /* ===== SCROLL ANIMATION ===== */
@@ -673,13 +685,13 @@
     <!-- ===== HOME ===== -->
     <section id="home">
       <div class="section-inner fade-in">
-
         <h1>
-          <span>il matrimonio di</span>
-          Ludovica &amp; Pietro
+          <span class="name-line">Ludovica</span>
+          <span class="name-amp">&amp;</span>
+          <span class="name-line">Pietro</span>
         </h1>
-
-        <p class="wedding-date">27 Settembre 2027</p>
+        <div class="divider"></div>
+        <p class="wedding-date">03 · Ottobre · 2027</p>
 
         <div class="divider"></div>
 
@@ -693,7 +705,7 @@
     </section>
 
     <!-- ===== CERIMONIA ===== -->
-    <section id="cerimonia" style="background:#fff;">
+    <section id="cerimonia" style="background: var(--bg2);">
       <div class="section-inner fade-in">
         <p class="section-label">La cerimonia</p>
         <h2>Ci sposiamo qui</h2>
@@ -745,7 +757,7 @@
     </section>
 
     <!-- ===== REGALO ===== -->
-    <section id="regalo" style="background:#fff;">
+    <section id="regalo" style="background: var(--bg2);">
       <div class="section-inner fade-in">
         <p class="section-label">Un pensiero per noi</p>
         <h2>Lista Nozze</h2>
@@ -883,7 +895,7 @@
     </section>
 
     <!-- ===== CONTATTI ===== -->
-    <section id="contatti" style="background:#fff;">
+    <section id="contatti" style="background: var(--bg2);">
       <div class="section-inner fade-in">
         <p class="section-label">Per qualsiasi info</p>
         <h2>Contattaci</h2>
@@ -948,6 +960,20 @@
         hamburger.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
       }
+
+      // ------- Navbar scroll -------
+      const navbar = document.querySelector('.navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 60) {
+          navbar.style.background = 'rgba(13, 11, 8, 0.92)';
+          navbar.style.backdropFilter = 'blur(8px)';
+          navbar.style.borderBottom = '1px solid rgba(201, 168, 76, 0.15)';
+        } else {
+          navbar.style.background = 'transparent';
+          navbar.style.backdropFilter = 'none';
+          navbar.style.borderBottom = 'none';
+        }
+      });
 
       // ------- Countdown -------
       const WEDDING_DATE = new Date('2025-09-27T15:00:00');
