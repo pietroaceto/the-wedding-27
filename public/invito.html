@@ -181,8 +181,10 @@
       color: var(--text);
       line-height: 1.15;
       margin-bottom: 0.45rem;
-      word-break: break-word;
+      overflow-wrap: break-word;
     }
+
+    .name-full .surname { display: block; }
 
     .name-birth {
       font-size: clamp(0.7rem, 1.8vw, 0.78rem);
@@ -236,8 +238,8 @@
     }
 
     .letter-info a:hover {
-      color: var(--gold-lt);
-      border-bottom-color: var(--gold-lt);
+      color: var(--gold);
+      border-bottom-color: var(--gold);
     }
 
     /* ── signature ── */
@@ -247,7 +249,7 @@
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-size: clamp(1.1rem, 3.5vw, 1.55rem);
-      color: var(--gold-lt);
+      color: var(--gold);
       letter-spacing: 0.04em;
     }
 
@@ -263,6 +265,8 @@
         text-align: center;
         width: 100%;
       }
+      .name-full { white-space: nowrap; }
+      .name-full .surname { display: inline; }
       .amp-col { padding: 0.25rem 0; }
     }
   </style>
@@ -389,7 +393,7 @@
     <!-- Names section -->
     <div class="names-section">
       <div class="name-block groom">
-        <p class="name-full">Pietro<br>Aceto</p>
+        <p class="name-full"><span class="first-name">Pietro</span> <span class="surname">Aceto</span></p>
         <p class="name-birth">
           Via Madonna del Riccio 37/A<br>
           Perugia (PG)
@@ -399,7 +403,7 @@
       <div class="amp-col">&amp;</div>
 
       <div class="name-block bride">
-        <p class="name-full">Ludovica<br>Conigliaro</p>
+        <p class="name-full"><span class="first-name">Ludovica</span> <span class="surname">Conigliaro</span></p>
         <p class="name-birth">
           Via del Cortone 36<br>
           Perugia (PG)
@@ -423,11 +427,10 @@
 
     <!-- Info & link -->
     <div class="letter-info">
-      Per info e comunicare la presenza ed eventualmente allergie e/o
-      intolleranze <span id="inv-cta">segui</span> il link:<br>
-      <a href="https://the-wedding-27.web.app"
+      Per info e conferma di partecipazione: <span id="inv-cta">segui</span> il link:<br>
+      <a href="https://thewedding27-e47d8.web.app"
          target="_blank" rel="noopener noreferrer">
-        the-wedding-27.web.app
+        thewedding27-e47d8.web.app
       </a>
     </div>
 
@@ -455,7 +458,13 @@
 <script>
   /* ── Build greeting from URL params ─────────────────────────────────────── */
   (function () {
-    var p = new URLSearchParams(location.search);
+    /* Decode opaque token: ?i=<base64url(querystring)> */
+    var raw = new URLSearchParams(location.search).get('i') || '';
+    var decoded = '';
+    try {
+      decoded = atob(raw.replace(/-/g, '+').replace(/_/g, '/'));
+    } catch (e) { decoded = ''; }
+    var p = new URLSearchParams(decoded);
     var tipo = (p.get('tipo') || '').toLowerCase().trim();
     var greeting;
 

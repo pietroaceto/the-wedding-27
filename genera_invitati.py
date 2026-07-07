@@ -1,3 +1,4 @@
+import base64
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -456,7 +457,8 @@ for idx, (g, meta) in enumerate(group_meta.items()):
     else:
         params['nome'] = meta.get('nome', g)
 
-    url = BASE_INVITE_URL + "?" + urlencode(params)
+    token = base64.urlsafe_b64encode(urlencode(params).encode()).decode()
+    url = BASE_INVITE_URL + "?i=" + token
     row_fill = group_fill_even if idx % 2 == 0 else group_fill_odd
 
     row_idx = ws2.max_row + 1

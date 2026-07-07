@@ -568,6 +568,11 @@
         font-size: 1.3rem;
         color: var(--text);
         margin-bottom: 1rem;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 400px) {
+        .contact-card h3 { font-size: 1.05rem; }
       }
 
       .contact-card a {
@@ -829,6 +834,11 @@
               </div>
             </div>
 
+            <div class="form-group">
+              <label for="notePersonale">Le tue note o intolleranze alimentari <em style="font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;font-size:0.8em;">(opzionale)</em></label>
+              <textarea id="notePersonale" name="notePersonale" rows="2" placeholder="Eventuali allergie, intolleranze..."></textarea>
+            </div>
+
             <p class="form-section-title">Partner</p>
             <div class="form-group">
               <label>Verrai con il/la tuo/a partner?</label>
@@ -849,6 +859,10 @@
                   <input type="text" id="partner-cognome" name="partnerCognome" autocomplete="off">
                 </div>
               </div>
+              <div class="form-group">
+                <label for="partnerNote">Note o intolleranze del partner <em style="font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;font-size:0.8em;">(opzionale)</em></label>
+                <textarea id="partnerNote" name="partnerNote" rows="2" placeholder="Eventuali allergie, intolleranze..."></textarea>
+              </div>
             </div>
 
             <p class="form-section-title">Figli</p>
@@ -867,15 +881,10 @@
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
-                  <option value="4+">4 o più</option>
+                  <option value="4">4</option>
                 </select>
               </div>
               <div id="figli-list"></div>
-            </div>
-
-            <div class="form-group" style="margin-top:1rem;">
-              <label for="note">Note o intolleranze alimentari</label>
-              <textarea id="note" name="note" rows="3" placeholder="Scrivi qui eventuali allergie, intolleranze o messaggi per gli sposi..."></textarea>
             </div>
 
             <div class="form-submit">
@@ -1021,11 +1030,11 @@
 
       function updateFigliList(val) {
         const container = document.getElementById('figli-list');
-        const n = val === '4+' ? 4 : parseInt(val, 10);
+        const n = parseInt(val, 10);
         let html = '';
         for (let i = 1; i <= n; i++) {
           html += `
-            <div class="form-row" style="margin-bottom:0.75rem;">
+            <div class="form-row" style="margin-bottom:0.5rem;">
               <div class="form-group" style="margin-bottom:0">
                 <label>Bambino ${i} – Nome <em style="font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;font-size:0.8em;">(opzionale)</em></label>
                 <input type="text" name="figlio${i}Nome" autocomplete="off" placeholder="es. Marco">
@@ -1038,6 +1047,10 @@
                   <option value="8+">8+ anni</option>
                 </select>
               </div>
+            </div>
+            <div class="form-group" style="margin-bottom:1.25rem;">
+              <label>Note o intolleranze bambino ${i} <em style="font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;font-size:0.8em;">(opzionale)</em></label>
+              <textarea name="figlio${i}Note" rows="2" placeholder="Eventuali allergie, intolleranze..."></textarea>
             </div>`;
         }
         container.innerHTML = html;
@@ -1077,17 +1090,31 @@
           return;
         }
 
+        const hasPartner = form.partner.value === 'si';
+        const hasFigli   = form.figli.value === 'si';
+        const numFigliVal = parseInt(form.numFigli?.value || '0', 10);
+        const figliDettagli = [];
+        if (hasFigli) {
+          for (let i = 1; i <= numFigliVal; i++) {
+            figliDettagli.push({
+              nome: (form[`figlio${i}Nome`]?.value || '').trim(),
+              eta:  form[`figlio${i}Eta`]?.value  || '',
+              note: (form[`figlio${i}Note`]?.value || '').trim()
+            });
+          }
+        }
+
         const data = {
           nome, cognome, email,
-          partecipazione: partecp,
-          partner:        form.partner.value === 'si',
-          partnerNome:    form.partnerNome?.value.trim()   || '',
-          partnerCognome: form.partnerCognome?.value.trim() || '',
-          figli:          form.figli.value === 'si',
-          numFigli:       form.numFigli?.value             || '',
-          figliNomi:      form.figliNomi?.value.trim()      || '',
-          note:           form.note.value.trim()            || '',
-          timestamp:      new Date().toISOString()
+          partecipazione:  partecp,
+          notePersonale:   (form.notePersonale?.value || '').trim(),
+          partner:         hasPartner,
+          partnerNome:     (form.partnerNome?.value   || '').trim(),
+          partnerCognome:  (form.partnerCognome?.value || '').trim(),
+          partnerNote:     (form.partnerNote?.value    || '').trim(),
+          figli:           hasFigli,
+          figliDettagli,
+          timestamp:       new Date().toISOString()
         };
 
         btn.disabled = true;
