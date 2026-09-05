@@ -11,12 +11,12 @@
   <style>
     /* ── Palette A (Terra Umbra) come default ── */
     :root {
-      --bg:      #100b06;
-      --bg2:     #1d1309;
+      --bg:      #1b2d24;
+      --bg2:     #2b443a;
       --gold:    #c9a84c;
       --gold-lt: #dfc06a;
-      --text:    #f7ece0;
-      --text-lt: #8c6a52;
+      --text:    #edf4ee;
+      --text-lt: #7a9788;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -134,6 +134,7 @@
        STAGE 1 — ENVELOPE
     ==================================================== */
     #envelope-stage {
+      width: 100%;
       min-height: calc(100vh - 52px);
       display: flex;
       flex-direction: column;
@@ -150,7 +151,8 @@
     }
 
     .env-wrapper {
-      width: min(480px, 92vw);
+      width: min(780px, 92vw);
+      margin: 0 auto;
       cursor: pointer;
       user-select: none;
       outline: none;
@@ -163,24 +165,72 @@
       border-radius: 4px;
     }
 
-    .env-wrapper svg {
+    .env-wrapper svg,
+    .env-graphic {
       display: block;
       width: 100%;
       height: auto;
       overflow: visible;
     }
 
-    #flap-group {
-      transform-box: fill-box;
-      transform-origin: 50% 0%;
-      transition: transform 0.78s cubic-bezier(0.42, 0, 0.28, 1.0);
-      backface-visibility: hidden;
+    .env-graphic {
+      position: relative;
+      width: 100%;
+      margin: 0 auto;
+      filter: drop-shadow(0 18px 26px rgba(0,0,0,0.18));
     }
 
-    #seal-group {
-      transform-box: fill-box;
-      transform-origin: 50% 50%;
+    .env-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+      pointer-events: none;
+      transition: opacity 0.78s cubic-bezier(0.42, 0, 0.28, 1.0);
+    }
+
+    .flap-overlay {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+      transform: translateX(-50%);
+      transform-origin: 50% 0%;
+      transform-style: preserve-3d;
+      pointer-events: none;
+      opacity: 1;
+      transition: transform 0.78s cubic-bezier(0.42, 0, 0.28, 1.0), opacity 0.32s ease;
+      backface-visibility: hidden;
+      overflow: visible;
+      will-change: transform;
+    }
+
+    .flap-overlay img {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .seal-wrap {
+      position: absolute;
+      left: 50%;
+      top: 59%;
+      z-index: 3;
+      width: min(220px, 29vw);
+      transform: translate(-50%, -50%);
       transition: opacity 0.32s ease, transform 0.32s ease;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,0.16));
+    }
+
+    .seal-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+      pointer-events: none;
     }
 
     .hint-label {
@@ -202,6 +252,7 @@
        STAGE 2 — LETTER
     ==================================================== */
     #letter-stage {
+      width: 100%;
       display: none;
       opacity: 0;
       transform: translateY(48px);
@@ -210,9 +261,17 @@
       min-height: calc(100vh - 52px);
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    #letter-stage > .letter-card {
+      margin: 0 auto;
+      width: min(660px, calc(100vw - 2rem));
     }
 
     .letter-card {
+      margin: 0 auto;
       max-width: 660px;
       width: 100%;
       background: var(--bg2);
@@ -347,8 +406,8 @@
     B · Vite Rossa
   </button>
   <button class="pal-btn" onclick="setPalette('C')" data-pal="C">
-    <span class="swatch" style="background:#0f1e13"></span>
-    C · Cipresso
+    <span class="swatch" style="background:#2b443a"></span>
+    C · Salvia
   </button>
   <button class="pal-btn" onclick="setPalette('D')" data-pal="D">
     <span class="swatch" style="background:#121624"></span>
@@ -379,58 +438,15 @@
        onclick="openEnvelope()"
        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEnvelope();}">
 
-    <svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <radialGradient id="sealGrad" cx="46%" cy="36%" r="65%">
-          <stop offset="0%"   stop-color="#e8c868"/>
-          <stop offset="55%"  stop-color="#c9a84c"/>
-          <stop offset="100%" stop-color="#8a6020"/>
-        </radialGradient>
-        <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop id="bodyStop1" offset="0%"   stop-color="#231508"/>
-          <stop id="bodyStop2" offset="100%" stop-color="#140d04"/>
-        </linearGradient>
-        <linearGradient id="flapGrad" x1="0.5" y1="0" x2="0.5" y2="1">
-          <stop id="flapStop1" offset="0%"   stop-color="#2a1a0a"/>
-          <stop id="flapStop2" offset="100%" stop-color="#1c1206"/>
-        </linearGradient>
-        <filter id="env-shadow" x="-8%" y="-8%" width="116%" height="130%">
-          <feDropShadow dx="0" dy="10" stdDeviation="18"
-            flood-color="#000000" flood-opacity="0.75"/>
-        </filter>
-      </defs>
-
-      <rect x="0.5" y="0.5" width="499" height="339" rx="2"
-        fill="url(#bodyGrad)"
-        stroke="rgba(201,168,76,0.48)" stroke-width="1"
-        filter="url(#env-shadow)"/>
-
-      <line x1="1"   y1="339" x2="250" y2="172" stroke="rgba(201,168,76,0.2)"  stroke-width="1"/>
-      <line x1="499" y1="339" x2="250" y2="172" stroke="rgba(201,168,76,0.2)"  stroke-width="1"/>
-      <line x1="1"   y1="1"   x2="250" y2="172" stroke="rgba(201,168,76,0.1)"  stroke-width="1"/>
-      <line x1="499" y1="1"   x2="250" y2="172" stroke="rgba(201,168,76,0.1)"  stroke-width="1"/>
-
-      <g id="flap-group">
-        <polygon points="1,1 499,1 250,182"
-          fill="url(#flapGrad)"
-          stroke="rgba(201,168,76,0.48)" stroke-width="1"
-          stroke-linejoin="round"/>
-        <g id="seal-group">
-          <circle cx="250" cy="108" r="42"
-            fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
-          <circle cx="250" cy="108" r="38" fill="url(#sealGrad)"/>
-          <circle cx="250" cy="108" r="30"
-            fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="1.5"/>
-          <circle cx="250" cy="108" r="25"
-            fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.8"/>
-          <text x="250" y="112"
-            font-family="'Playfair Display', Georgia, serif"
-            font-style="italic" font-size="17" font-weight="600"
-            fill="#0d0b08" text-anchor="middle" dominant-baseline="middle"
-            letter-spacing="2">L &amp; P</text>
-        </g>
-      </g>
-    </svg>
+    <div class="env-graphic" aria-hidden="true">
+      <img class="env-image" src="images/SVG/Lettera.svg" alt="Busta dell'invito" />
+      <div id="seal-group" class="seal-wrap">
+        <img src="images/Timbro.png" alt="Timbro ceralacca" />
+      </div>
+      <div id="flap-group" class="flap-overlay">
+        <img src="images/SVG/Lembo.svg" alt="Lembo superiore della busta" />
+      </div>
+    </div>
   </div>
 
   <p class="hint-label">— tocca per aprire —</p>
@@ -484,7 +500,7 @@
 
     <p class="letter-body">
       sono lieti di <span id="inv-verb">invitarvi</span> il
-      <strong>3 ottobre 2027</strong> presso
+      <strong>2 ottobre 2027</strong> presso
       <strong>l'Abbazia di Monte Corona</strong> (Umbertide PG)
       per la celebrazione del rito.
     </p>
@@ -533,10 +549,10 @@
       flapTop: '#2a1018', flapBot: '#1e0c12'
     },
     C: {
-      name: 'C · Cipresso',
-      bg: '#07100a', bg2: '#0f1e13', text: '#e6ede6', textLt: '#587862',
-      bodyTop: '#102212', bodyBot: '#0a150d',
-      flapTop: '#142814', flapBot: '#0d1c10'
+      name: 'C · Salvia',
+      bg: '#1b2d24', bg2: '#2b443a', text: '#edf4ee', textLt: '#7a9788',
+      bodyTop: '#294636', bodyBot: '#1a2d26',
+      flapTop: '#335646', flapBot: '#20362d'
     },
     D: {
       name: 'D · Nebbia di Ottobre',
@@ -565,11 +581,7 @@
     r.setProperty('--text',    p.text);
     r.setProperty('--text-lt', p.textLt);
 
-    /* Update SVG envelope gradients */
-    document.getElementById('bodyStop1').setAttribute('stop-color', p.bodyTop);
-    document.getElementById('bodyStop2').setAttribute('stop-color', p.bodyBot);
-    document.getElementById('flapStop1').setAttribute('stop-color', p.flapTop);
-    document.getElementById('flapStop2').setAttribute('stop-color', p.flapBot);
+    /* Image-based envelope does not use SVG gradient stops. */
 
     /* Update active button */
     document.querySelectorAll('.pal-btn').forEach(function(b) {
@@ -601,9 +613,12 @@
 
       _opened = false;
       var flap = document.getElementById('flap-group');
+      var envImage = document.querySelector('.env-image');
       var seal = document.getElementById('seal-group');
       flap.style.transition = '';
       flap.style.transform  = '';
+      envImage.style.transition = '';
+      envImage.style.opacity = '';
       seal.style.transition = '';
       seal.style.opacity    = '';
       seal.style.transform  = '';
@@ -623,6 +638,7 @@
     _opened = true;
 
     var flap     = document.getElementById('flap-group');
+    var envImage = document.querySelector('.env-image');
     var seal     = document.getElementById('seal-group');
     var envStage = document.getElementById('envelope-stage');
     var letStage = document.getElementById('letter-stage');
@@ -631,8 +647,11 @@
     seal.style.opacity   = '0';
     seal.style.transform = 'scale(1.2)';
 
+    flap.style.opacity = '1';
     setTimeout(function() {
-      flap.style.transform = 'perspective(720px) rotateX(-182deg)';
+      envImage.style.opacity = '0';
+      flap.style.transformOrigin = '50% 0%';
+      flap.style.transform = 'translateX(-50%) perspective(1100px) rotateX(-150deg) translateY(-8px)';
     }, 230);
 
     setTimeout(function() {
